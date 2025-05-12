@@ -1,6 +1,8 @@
 #!/bin/sh
 
 main() {
+	DIR=$(dirname $0)
+
 	printf "am? "
 	read amount
 
@@ -15,6 +17,8 @@ main() {
 
 	printf "da? "
 	read date
+
+	date=$(sh $DIR/parse_date "$date")
 
 	format="insert into t (d, a, f, t, c) values"
 	format="$format ('%s', %d, '%s', '%s', '%s');"

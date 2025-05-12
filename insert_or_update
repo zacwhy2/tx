@@ -1,0 +1,34 @@
+#!/bin/sh
+
+main() {
+	printf "am? "
+	read amount
+
+	printf "to? "
+	read to
+
+	printf "fr? "
+	read from
+
+	printf "co? "
+	read comment
+
+	printf "da? "
+	read date
+
+	format="insert into t (d, a, f, t, c) values"
+	format="$format ('%s', %d, '%s', '%s', '%s');"
+
+	printf "$format" \
+		$date \
+		$amount \
+		"$(echo $from | escape_quotes)" \
+		"$(echo $to | escape_quotes)" \
+		"$(echo $comment | escape_quotes)"
+}
+
+escape_quotes() {
+	sed "s/'/''/g"
+}
+
+main

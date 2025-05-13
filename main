@@ -1,0 +1,16 @@
+#!/bin/sh
+
+main() {
+	DIR=$(dirname $0)
+
+	case "$1" in
+		a)
+			sh $DIR/insert_or_update
+			;;
+		l)
+			sh $DIR/select "$2"
+			;;
+	esac
+}
+
+main "$@"

@@ -6,6 +6,11 @@
 # ./parse_date "01"
 
 main() {
+	if echo "$1" | grep -Eq '^\d{1,}-\d{2}-\d{2}$'; then
+		echo "$1"
+		exit 0
+	fi
+
 	sqlite3 <<EOD
 with
 a as (

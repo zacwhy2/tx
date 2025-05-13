@@ -38,6 +38,8 @@ insert into t (d, a, f, t, c) values (
 
 select last_insert_rowid();
 EOD
+
+	sh $DIR/select "$date"
 }
 
 escape_quotes() {

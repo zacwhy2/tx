@@ -10,17 +10,25 @@ main() {
 		exit 1
 	fi
 
-	printf "am? "
-	read amount
+	until echo "$amount" | grep -Eq '^\d{1,}$'; do
+		printf "am? "
+		read amount
+	done
 
-	printf "to? "
-	read to
+	until grep -q "^${to}\$" $DIR/config/accepted_to; do
+		printf "to? "
+		read to
+	done
 
-	printf "fr? "
-	read from
+	until grep -q "^${from}\$" $DIR/config/accepted_from; do
+		printf "fr? "
+		read from
+	done
 
-	printf "co? "
-	read comment
+	until [ -n "$comment" ]; do
+		printf "co? "
+		read comment
+	done
 
 	printf "da? "
 	read date

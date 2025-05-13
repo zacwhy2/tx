@@ -3,7 +3,7 @@
 main() {
 	DIR=$(dirname $0)
 
-	source $DIR/config
+	. $DIR/config/main.sh
 
 	if [ "$DB" = "" ]; then
 		printf "Error: DB not configured"
@@ -31,9 +31,9 @@ main() {
 insert into t (d, a, f, t, c) values (
 	'$date',
 	$amount,
-	'$(echo $from | escape_quotes)',
-	'$(echo $to | escape_quotes)',
-	'$(echo $comment | escape_quotes)'
+	'$(escape_quotes "$from")',
+	'$(escape_quotes "$to")',
+	'$(escape_quotes "$comment")'
 );
 
 select last_insert_rowid();
@@ -41,7 +41,7 @@ EOD
 }
 
 escape_quotes() {
-	sed "s/'/''/g"
+	sed "s/'/''/g" <<< "$@"
 }
 
 main

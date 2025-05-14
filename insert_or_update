@@ -10,7 +10,7 @@ main() {
 		exit 1
 	fi
 
-	until echo "$amount" | grep -Eq '^\d{1,}$'; do
+	until echo "$amount" | grep -q '^[0-9]\{1,\}$'; do
 		printf "am? "
 		read amount
 	done
@@ -51,7 +51,7 @@ EOD
 }
 
 escape_quotes() {
-	sed "s/'/''/g" <<< "$@"
+	echo "$@" | sed "s/'/''/g"
 }
 
 main

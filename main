@@ -1,5 +1,21 @@
 #!/bin/sh
 
+help() {
+	cat <<EOD
+usage: tx <command> [<args>]
+
+commands:
+	a             Add tx
+	l [<date>]    List txs
+
+example:
+	$ tx l 2000-12-31
+	$ tx l 31
+	$ tx l 31dec
+	$ tx l 31dec2025
+EOD
+}
+
 main() {
 	DIR=$(dirname $0)
 
@@ -9,6 +25,10 @@ main() {
 			;;
 		l)
 			sh $DIR/select "$2"
+			;;
+		*)
+			help
+			exit 1
 			;;
 	esac
 }

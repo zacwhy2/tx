@@ -6,10 +6,10 @@ help() {
 	cat <<EOD
 usage: script <db> <from> <day> [<month> [<year>]]
 
-example:
-	$ script path/to/sqlite.db one 01
-	$ script path/to/sqlite.db one 01 12
-	$ script path/to/sqlite.db one 01 12 2025
+examples:
+    $ script path/to/sqlite.db one 01
+    $ script path/to/sqlite.db one 01 12
+    $ script path/to/sqlite.db one 01 12 2025
 EOD
 }
 

@@ -5,14 +5,14 @@ help() {
 usage: tx <command> [<args>]
 
 commands:
-	a             Add tx
-	l [<date>]    List txs
+    a             Add tx
+    l [<date>]    List txs
 
-example:
-	$ tx l 2000-12-31
-	$ tx l 31
-	$ tx l 31dec
-	$ tx l 31dec2025
+examples:
+    $ tx l 2000-12-31
+    $ tx l 31
+    $ tx l 31dec
+    $ tx l 31dec2025
 EOD
 }
 

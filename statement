@@ -1,0 +1,126 @@
+#!/bin/sh
+
+DIR=$(dirname $0)
+
+help() {
+	cat <<EOD
+usage: script <db> <from> <day> [<month> [<year>]]
+
+example:
+	$ script path/to/sqlite.db one 01
+	$ script path/to/sqlite.db one 01 12
+	$ script path/to/sqlite.db one 01 12 2025
+EOD
+}
+
+main() {
+	if [ $# -lt 3 ]; then
+		help
+		exit 1
+	fi
+
+	db="$1"
+	from="$2"
+	day="$3"
+	month="$4"
+	year="$5"
+
+	read previous_date current_date <<< $(get_dates "$day" "$month" "$year")
+
+	echo "from  : $from"
+	echo "start : $previous_date"
+	echo "end   : $current_date"
+
+	sqlite3 "$db" <<EOD
+.mode column
+.width 10 -8
+
+select
+	d as date,
+	printf('%.2f', a / 100.0) as amount,
+	c as description
+from t
+where f = '$from'
+	and d >= '$previous_date'
+	and d < '$current_date'
+order by d, oid;
+
+select
+	'' as '',
+	printf('%.2f', sum(a) / 100.0) as ''
+from t
+where f = '$from'
+	and d >= '$previous_date'
+	and d < '$current_date'
+;
+
+EOD
+}
+
+get_dates() {
+	day="$1"
+	month="$2"
+	year="$3"
+
+	sqlite3 <<EOD
+.separator ' '
+
+with
+input as (
+	select
+		cast('$day' as integer) as day,
+		cast('$month' as integer) as month,
+		cast('$year' as integer) as year
+),
+input_or_default as (
+	select
+		case
+			when month >= 1 and month <= 12 then
+				printf('%02d', month)
+			else
+				strftime('%m', 'now')
+		end as month,
+		case
+			when year >= 1 then
+				printf('%d', year)
+			else
+				strftime('%Y', 'now')
+		end as year
+	from input
+),
+statement_date as (
+	select
+		printf('%s-%s-%s',
+			input_or_default.year,
+			input_or_default.month,
+			day
+		) as d
+	from input_or_default, input
+),
+dates as (
+	select
+		case
+			/* if date falls on Sunday, use next day */
+			when strftime('%w', d, '-1 month') = '6' then
+				date(d, '-1 month', '+1 day')
+			else
+				date(d, '-1 month')
+		end as previous,
+		case
+			/* if date falls on Sunday, use next day */
+			when strftime('%w', d) = '6' then
+				date(d, '+1 day')
+			else
+				date(d)
+		end as current
+	from statement_date
+)
+select
+	previous,
+	current
+from dates;
+
+EOD
+}
+
+main "$@"

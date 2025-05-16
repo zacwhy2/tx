@@ -25,7 +25,9 @@ main() {
 	month="$4"
 	year="$5"
 
-	read previous_date current_date <<< $(get_dates "$day" "$month" "$year")
+	s=$(get_dates "$day" "$month" "$year")
+	previous_date=$(echo "$s" | cut -d ' ' -f 1)
+	current_date=$(echo "$s" | cut -d ' ' -f 2)
 
 	echo "from  : $from"
 	echo "start : $previous_date"

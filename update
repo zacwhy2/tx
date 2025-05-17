@@ -1,0 +1,85 @@
+#!/bin/sh
+
+help() {
+	cat <<EOD
+usage: update <db> <oid> [<field>]
+
+fields:
+    d date
+    a amount
+    f from
+    t to
+    c comment
+
+examples:
+    $ update path/to/sqlite.db 123
+    $ update path/to/sqlite.db 123 a
+EOD
+}
+
+main() {
+	case $# in
+		2)
+			display_values "$@"
+			;;
+		3)
+			update_value "$@"
+			;;
+		*)
+			help
+			exit 1
+	esac
+}
+
+display_values() {
+	db="$1"
+	oid="$2"
+
+	sqlite3 "$db" <<EOD
+.mode line
+
+select
+	oid,
+	d,
+	a,
+	f,
+	t,
+	c
+from t
+where oid = $oid;
+EOD
+}
+
+update_value() {
+	db="$1"
+	oid="$2"
+	field="$3"
+
+	if ! echo "$field" | grep -q '^[acdft]$'; then
+		help
+		exit 1
+	fi
+
+	sqlite3 "$db" <<EOD
+.mode line
+
+select oid, $field
+from t
+where oid = $oid;
+EOD
+
+	until [ "$valid_value" = true ]; do
+		printf "new value? "
+		read value
+
+		valid_value=true
+	done
+
+	cat <<EOD
+update t
+set $field = '$value'
+where oid = $oid;
+EOD
+}
+
+main "$@"

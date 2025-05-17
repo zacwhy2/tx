@@ -1,85 +1,104 @@
 #!/bin/sh
 
-help() {
-	cat <<EOD
-usage: update <db> <oid> [<field>]
-
-fields:
-    d date
-    a amount
-    f from
-    t to
-    c comment
-
-examples:
-    $ update path/to/sqlite.db 123
-    $ update path/to/sqlite.db 123 a
-EOD
-}
+DIR=$(dirname $0)
 
 main() {
-	case $# in
-		2)
-			display_values "$@"
-			;;
-		3)
-			update_value "$@"
-			;;
-		*)
-			help
-			exit 1
-	esac
-}
+	while :; do
+		printf "oid? "
+		read s
 
-display_values() {
-	db="$1"
-	oid="$2"
+		if [ "$s" = "q" ]; then
+			exit
+		fi
 
-	sqlite3 "$db" <<EOD
-.mode line
+		if ! echo "$s" | grep -Eq "^[0-9]+$"; then
+			echo "invalid oid"
+			continue
+		fi
 
-select
-	oid,
-	d,
-	a,
-	f,
-	t,
-	c
-from t
-where oid = $oid;
-EOD
-}
-
-update_value() {
-	db="$1"
-	oid="$2"
-	field="$3"
-
-	if ! echo "$field" | grep -q '^[acdft]$'; then
-		help
-		exit 1
-	fi
-
-	sqlite3 "$db" <<EOD
-.mode line
-
-select oid, $field
-from t
-where oid = $oid;
-EOD
-
-	until [ "$valid_value" = true ]; do
-		printf "new value? "
-		read value
-
-		valid_value=true
+		break
 	done
 
-	cat <<EOD
-update t
-set $field = '$value'
-where oid = $oid;
-EOD
+	db="$1"
+	oid="$s"
+
+	while :; do
+		sqlite3 -line "$db" "select oid, d, a, f, t, c from t where oid = $oid;"
+
+		while :; do
+			printf "column? "
+			read column
+
+			if [ "$column" = "q" ]; then
+				break 2
+			fi
+
+			if ! echo "$column" | grep -q "^[acdft]$"; then
+				echo "invalid column"
+				continue
+			fi
+
+			value_is_valid=false
+
+			while :; do
+				printf "$column? "
+				read value
+
+				if [ "$value" = "q" ]; then
+					break
+				fi
+
+				case "$column" in
+					a)
+						if echo "$value" | grep -Eq "^[0-9]+$"; then
+							value_is_valid=true
+						fi
+						;;
+					c)
+						if [ -n "$value" ]; then
+							value_is_valid=true
+							value="'$(escape_quotes $value)'"
+						fi
+						;;
+					d)
+						if echo "$value" | grep -Eq '^[0-3][0-9](([a-z]{3})([0-9]+)?)?$'; then
+							value_is_valid=true
+							date=$(sh $DIR/parse_date "$value")
+							value="'$date'"
+						fi
+						;;
+					f)
+						if grep -q "^$value$" $DIR/config/accepted_from; then
+							value_is_valid=true
+							value="'$(escape_quotes $value)'"
+						fi
+						;;
+					t)
+						if grep -q "^$value$" $DIR/config/accepted_to; then
+							value_is_valid=true
+							value="'$(escape_quotes $value)'"
+						fi
+						;;
+				esac
+
+				if [ "$value_is_valid" != true ]; then
+					echo "invalid value"
+					continue
+				fi
+
+				sql="update t set $column = $value where oid = $oid;"
+
+				echo "$sql"
+				echo
+
+				break 2
+			done
+		done
+	done
+}
+
+escape_quotes() {
+	echo "$@" | sed "s/'/''/g"
 }
 
 main "$@"

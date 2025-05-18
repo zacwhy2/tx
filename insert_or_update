@@ -1,8 +1,8 @@
 #!/bin/sh
 
-main() {
-	DIR=$(dirname $0)
+DIR=$(dirname $0)
 
+main() {
 	. $DIR/config/main.sh
 
 	if [ "$DB" = "" ]; then
@@ -10,17 +10,17 @@ main() {
 		exit 1
 	fi
 
-	until echo "$amount" | grep -q '^[0-9]\{1,\}$'; do
+	until echo "$amount" | grep -Eq '^[0-9]+$'; do
 		printf "am? "
 		read amount
 	done
 
-	until grep -q "^${to}\$" $DIR/config/accepted_to; do
+	until grep -q "^$to$" $DIR/config/accepted_to; do
 		printf "to? "
 		read to
 	done
 
-	until grep -q "^${from}\$" $DIR/config/accepted_from; do
+	until grep -q "^$from$" $DIR/config/accepted_from; do
 		printf "fr? "
 		read from
 	done

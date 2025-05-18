@@ -1,5 +1,7 @@
 #!/bin/sh
 
+DIR=$(dirname $0)
+
 help() {
 	cat <<EOD
 usage: tx <command> [<args>]
@@ -7,6 +9,7 @@ usage: tx <command> [<args>]
 commands:
     a             Add tx
     l [<date>]    List txs
+    u             Update tx
 
 examples:
     $ tx l 2000-12-31
@@ -17,14 +20,22 @@ EOD
 }
 
 main() {
-	DIR=$(dirname $0)
+	. $DIR/config/main.sh
+
+	if [ "$DB" = "" ]; then
+		printf "Error: DB not configured"
+		exit 1
+	fi
 
 	case "$1" in
 		a)
-			sh $DIR/insert_or_update
+			sh $DIR/insert
 			;;
 		l)
 			sh $DIR/select "$2"
+			;;
+		u)
+			sh $DIR/update "$DB"
 			;;
 		*)
 			help

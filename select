@@ -1,20 +1,16 @@
 #!/bin/sh
 
+DIR=$(dirname $0)
+
 main() {
-	DIR=$(dirname $0)
+	db="$1"
+	s="$2"
 
-	. $DIR/config/main.sh
-
-	if [ "$DB" = "" ]; then
-		printf "Error: DB not configured"
-		exit 1
-	fi
-
-	date=$(sh $DIR/parse_date "$1")
+	date=$(sh $DIR/parse_date "$s")
 
 	echo $date
 
-	sqlite3 "$DB" <<EOD
+	sqlite3 "$db" <<EOD
 .mode column
 
 .width -8 10 10 15
@@ -31,4 +27,4 @@ order by oid;
 EOD
 }
 
-main "$1"
+main "$@"

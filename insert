@@ -3,12 +3,7 @@
 DIR=$(dirname $0)
 
 main() {
-	. $DIR/config/main.sh
-
-	if [ "$DB" = "" ]; then
-		printf "Error: DB not configured"
-		exit 1
-	fi
+	db="$1"
 
 	until echo "$amount" | grep -Eq '^[0-9]+$'; do
 		printf "am? "
@@ -35,7 +30,7 @@ main() {
 
 	date=$(sh $DIR/parse_date "$date")
 
-	sqlite3 "$DB" <<EOD
+	sqlite3 "$db" <<EOD
 insert into t (d, a, f, t, c) values (
 	'$date',
 	$amount,
@@ -47,11 +42,12 @@ insert into t (d, a, f, t, c) values (
 select last_insert_rowid();
 EOD
 
-	sh $DIR/select "$date"
+	echo
+	sh $DIR/select "$db" "$date"
 }
 
 escape_quotes() {
 	echo "$@" | sed "s/'/''/g"
 }
 
-main
+main "$@"

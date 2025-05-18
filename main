@@ -29,10 +29,10 @@ main() {
 
 	case "$1" in
 		a)
-			sh $DIR/insert
+			sh $DIR/insert "$DB"
 			;;
 		l)
-			sh $DIR/select "$2"
+			sh $DIR/select "$DB" "$2"
 			;;
 		u)
 			sh $DIR/update "$DB"

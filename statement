@@ -4,12 +4,12 @@ DIR=$(dirname $0)
 
 help() {
 	cat <<EOD
-usage: script <db> <from> <day> [<month> [<year>]]
+usage: statement <db> <from> <day> [<month> [<year>]]
 
 examples:
-    $ script path/to/sqlite.db one 01
-    $ script path/to/sqlite.db one 01 12
-    $ script path/to/sqlite.db one 01 12 2025
+    $ statement path/to/sqlite.db one 01
+    $ statement path/to/sqlite.db one 01 12
+    $ statement path/to/sqlite.db one 01 12 2025
 EOD
 }
 
@@ -90,7 +90,7 @@ input_or_default as (
 		end as year
 	from input
 ),
-statement_date as (
+statement_date_raw as (
 	select
 		printf('%s-%s-%s',
 			input_or_default.year,
@@ -99,17 +99,33 @@ statement_date as (
 		) as d
 	from input_or_default, input
 ),
+statement_date as (
+	select
+		case
+			-- if month is provided, use provided month
+			when month >= 1 and month <= 12 then
+				date(d)
+
+			-- if today is after statement date, use next month statement date
+			when unixepoch(d) - unixepoch() < 0 then
+				date(d, '+1 month')
+
+			else
+				date(d)
+		end as d
+	from statement_date_raw, input
+),
 dates as (
 	select
 		case
-			/* if date falls on Sunday, use next day */
+			-- if date falls on Sunday, use next day
 			when strftime('%w', d, '-1 month') = '6' then
 				date(d, '-1 month', '+1 day')
 			else
 				date(d, '-1 month')
 		end as previous,
 		case
-			/* if date falls on Sunday, use next day */
+			-- if date falls on Sunday, use next day
 			when strftime('%w', d) = '6' then
 				date(d, '+1 day')
 			else

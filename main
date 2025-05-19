@@ -7,15 +7,23 @@ help() {
 usage: tx <command> [<args>]
 
 commands:
-    a             Add tx
-    l [<date>]    List txs
-    u             Update tx
+    a    Add tx
+    l    List txs
+    s    Statement
+    u    Update tx
 
+usage: tx l [<date>]
 examples:
     $ tx l 2000-12-31
     $ tx l 31
     $ tx l 31dec
     $ tx l 31dec2025
+
+usage: tx s <from> <day> [<month> [<year>]]
+examples:
+    $ tx s one 01
+    $ tx s one 01 12
+    $ tx s one 01 12 2025
 EOD
 }
 
@@ -33,6 +41,10 @@ main() {
 			;;
 		l)
 			sh $DIR/select "$DB" "$2"
+			;;
+		s)
+			shift
+			sh $DIR/statement "$DB" "$@"
 			;;
 		u)
 			sh $DIR/update "$DB"

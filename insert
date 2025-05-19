@@ -10,12 +10,12 @@ main() {
 		read amount
 	done
 
-	until grep -q "^$to$" $DIR/config/accepted_to; do
+	until grep -Fqx "$to" $DIR/config/accepted_to; do
 		printf "to? "
 		read to
 	done
 
-	until grep -q "^$from$" $DIR/config/accepted_from; do
+	until grep -Fqx "$from" $DIR/config/accepted_from; do
 		printf "fr? "
 		read from
 	done

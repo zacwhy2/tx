@@ -14,6 +14,8 @@ main() {
 		fi
 	done
 
+	echo "select printf('am: %.2f', cast($amount as real) / 100)" | sqlite3
+
 	until grep -Fqx "$to" $DIR/config/accepted_to; do
 		printf "to? "
 		read to
@@ -41,14 +43,36 @@ main() {
 		fi
 	done
 
-	printf "da? "
-	read date
+	while :; do
+		default_date=$(echo "select date()" | sqlite3)
 
-	if [ "$date" = "qq" ]; then
-		exit
-	fi
+		printf "da? ($default_date) "
+		read date
 
-	date=$(sh $DIR/parse_date "$date")
+		if [ "$date" = "qq" ]; then
+			exit
+		fi
+
+		if echo "$date" | grep -q '^d$'; then
+			date="$default_date"
+			break
+		fi
+
+		if echo "$date" | grep -Eq '^[0-3][0-9]([a-z]{3}([0-9]{1,})?)?$'; then
+			date=$(sh $DIR/parse_date "$date")
+			break
+		fi
+
+		echo
+		echo "examples:"
+		echo "d          default date"
+		echo "31dec2025  2025-12-31"
+		echo "31dec      2025-12-31"
+		echo "31         2025-12-31"
+		echo
+	done
+
+	echo "da: $date"
 
 	sqlite3 "$db" <<EOD
 insert into t (d, a, f, t, c) values (

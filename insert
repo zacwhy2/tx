@@ -8,25 +8,45 @@ main() {
 	until echo "$amount" | grep -Eq '^[0-9]+$'; do
 		printf "am? "
 		read amount
+
+		if [ "$amount" = "qq" ]; then
+			exit
+		fi
 	done
 
 	until grep -Fqx "$to" $DIR/config/accepted_to; do
 		printf "to? "
 		read to
+
+		if [ "$to" = "qq" ]; then
+			exit
+		fi
 	done
 
 	until grep -Fqx "$from" $DIR/config/accepted_from; do
 		printf "fr? "
 		read from
+
+		if [ "$from" = "qq" ]; then
+			exit
+		fi
 	done
 
 	until [ -n "$comment" ]; do
 		printf "co? "
 		read comment
+
+		if [ "$comment" = "qq" ]; then
+			exit
+		fi
 	done
 
 	printf "da? "
 	read date
+
+	if [ "$date" = "qq" ]; then
+		exit
+	fi
 
 	date=$(sh $DIR/parse_date "$date")
 

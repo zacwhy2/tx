@@ -90,6 +90,8 @@ main() {
 				echo "$sql"
 				echo
 
+				sqlite3 "$db" "$sql"
+
 				break 2
 			done
 		done

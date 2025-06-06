@@ -8,6 +8,7 @@ usage: tx <command> [<args>]
 
 commands:
     a    Add tx
+    f    List future txs
     l    List txs
     s    Statement
     u    Update tx
@@ -18,7 +19,6 @@ examples:
     $ tx l 31
     $ tx l 31dec
     $ tx l 31dec2025
-    $ tx l f  # future
 
 usage: tx s <from> <day> [<month> [<year>]]
 examples:
@@ -39,6 +39,9 @@ main() {
 	case "$1" in
 		a)
 			sh $DIR/insert "$DB"
+			;;
+		f)
+			sh $DIR/select_future "$DB"
 			;;
 		l)
 			sh $DIR/select "$DB" "$2"

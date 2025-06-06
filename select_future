@@ -4,26 +4,22 @@ DIR=$(dirname $0)
 
 main() {
 	db="$1"
-	s="$2"
-
-	date=$(sh $DIR/parse_date "$s")
-
-	echo $date
 
 	sqlite3 "$db" <<EOD
 .mode column
 
-.width -8 10 10 15
+.width 10 -8 10 10 15
 
 select
+	d,
 	printf('%.2f', a / 100.0) as a,
 	f,
 	t,
 	substr(c, 1, 15) as c,
 	oid
 from t
-where d = '$date'
-order by oid;
+where d > date()
+order by d, oid;
 EOD
 }
 

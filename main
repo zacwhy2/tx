@@ -18,6 +18,7 @@ examples:
     $ tx l 31
     $ tx l 31dec
     $ tx l 31dec2025
+    $ tx l f  # future
 
 usage: tx s <from> <day> [<month> [<year>]]
 examples:

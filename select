@@ -6,9 +6,14 @@ main() {
 	db="$1"
 	s="$2"
 
-	date=$(sh $DIR/parse_date "$s")
-
-	echo $date
+	if [ "$s" = "f" ]; then
+		where="d > date()"
+		echo "Future"
+	else
+		date=$(sh $DIR/parse_date "$s")
+		where="d = '$date'"
+		echo $date
+	fi
 
 	sqlite3 "$db" <<EOD
 .mode column
@@ -22,7 +27,7 @@ select
 	substr(c, 1, 15) as c,
 	oid
 from t
-where d = '$date'
+where $where
 order by oid;
 EOD
 }

@@ -7,16 +7,14 @@ main() {
 
 	sqlite3 "$db" <<EOD
 .mode column
+.header off
 
-.width 10 -8 10 10 15
+.width 10 -7 35
 
 select
 	d,
-	printf('%.2f', a / 100.0) as a,
-	f,
-	t,
-	substr(c, 1, 15) as c,
-	oid
+	printf('%.2f', a / 100.0),
+	printf('%s -> %s (%s)', f, t, substr(c, 1, 15))
 from t
 where d > date()
 order by d, oid;

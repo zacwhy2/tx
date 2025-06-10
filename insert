@@ -9,7 +9,7 @@ main() {
 		printf "am? "
 		read amount
 
-		if [ "$amount" = "qq" ]; then
+		if [ "$amount" = ".q" ]; then
 			exit
 		fi
 	done
@@ -20,7 +20,7 @@ main() {
 		printf "to? "
 		read to
 
-		if [ "$to" = "qq" ]; then
+		if [ "$to" = ".q" ]; then
 			exit
 		fi
 	done
@@ -29,7 +29,7 @@ main() {
 		printf "fr? "
 		read from
 
-		if [ "$from" = "qq" ]; then
+		if [ "$from" = ".q" ]; then
 			exit
 		fi
 	done
@@ -38,7 +38,7 @@ main() {
 		printf "co? "
 		read comment
 
-		if [ "$comment" = "qq" ]; then
+		if [ "$comment" = ".q" ]; then
 			exit
 		fi
 	done
@@ -49,7 +49,7 @@ main() {
 		printf "da? ($default_date) "
 		read date
 
-		if [ "$date" = "qq" ]; then
+		if [ "$date" = ".q" ]; then
 			exit
 		fi
 
@@ -65,7 +65,7 @@ main() {
 
 		echo
 		echo "examples:"
-		echo "d          default date"
+		echo "d          $default_date"
 		echo "31dec2025  2025-12-31"
 		echo "31dec      2025-12-31"
 		echo "31         2025-12-31"

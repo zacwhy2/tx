@@ -9,7 +9,7 @@ main() {
 		printf "oid? "
 		read oid
 
-		if [ "$oid" = "q" ]; then
+		if [ "$oid" = ".q" ]; then
 			exit
 		fi
 
@@ -28,7 +28,7 @@ main() {
 			printf "column? "
 			read column
 
-			if [ "$column" = "q" ]; then
+			if [ "$column" = ".q" ]; then
 				break 2
 			fi
 
@@ -43,7 +43,7 @@ main() {
 				printf "$column? "
 				read value
 
-				if [ "$value" = "q" ]; then
+				if [ "$value" = ".q" ]; then
 					break
 				fi
 
